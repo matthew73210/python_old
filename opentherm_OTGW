@@ -1,0 +1,43 @@
+#! python
+
+
+import telnetlib
+
+
+HOST = "192.168.1.100" #set OTGW ip
+PORT = "6638" #set OTGW port
+debug_lvl = 0 #set debug level: 0 or 1
+verbose_lvl =0 #set verbose level: 0 or 1
+
+
+
+
+tn = telnetlib.Telnet()
+
+
+def telnet_read():
+    
+    try:
+        print("connecting to host")
+        
+        if debug_lvl > 0:
+            print("Debug set to print")
+            tn.set_debuglevel(debug_lvl)
+        
+        tn.open(HOST,PORT)
+        print("Port opened")
+        tn.write(('PS=1' + '\r\n').encode('ascii'))
+        output=tn.read_until(("\n>").encode('ascii'),1)
+        tn.close()
+        print("connection closed")
+        
+        return output
+    
+    except:
+        print("Something went wrong, try setting debug and verbose to trace error")
+        
+        
+data= str(telnet_read())
+
+
+    
