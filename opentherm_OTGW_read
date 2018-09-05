@@ -6,7 +6,7 @@ import re
 HOST = "192.168.1.100" #set OTGW ip
 PORT = "6638" #set OTGW port
 debug_lvl = 0 #set debug level: 0 or 1
-verbose_lvl =0 #set verbose level: 0 or 1
+verbose_lvl =1 #set verbose level: 0 or 1
 
 
 
@@ -43,9 +43,6 @@ def telnet_read():
     
     except:
         print("Something went wrong, try setting debug and verbose to trace error")
-        
-
-      
 
 
 def parse_data():
@@ -93,32 +90,34 @@ print(data)
 #DHW pump/valve operation hours (MsgID=122) - Printed as a decimal value
 #DHW burner operation hours (MsgID=123) - Printed as a decimal value
 
+if verbose_lvl > 0:
+        print("Parsing data to variables")
+
 MsgID_0=data.pop(0)
-MsgID_1=data.pop(0)
+MsgID_1=float(data.pop(0))
 MsgID_6=data.pop(0)
-MsgID_14=data.pop(0)
+MsgID_14=float(data.pop(0))
 MsgID_15=data.pop(0)
-MsgID_16=data.pop(0)    
-MsgID_17=data.pop(0)
-MsgID_18=data.pop(0)
-MsgID_24=data.pop(0)
-MsgID_25=data.pop(0)
-MsgID_26=data.pop(0)
-MsgID_27=data.pop(0)
-MsgID_28=data.pop(0)
+MsgID_16=float(data.pop(0))    
+MsgID_17=float(data.pop(0))
+MsgID_18=float(data.pop(0))
+MsgID_24=float(data.pop(0))
+MsgID_25=float(data.pop(0))
+MsgID_26=float(data.pop(0))
+MsgID_27=float(data.pop(0))
+MsgID_28=float(data.pop(0))
 MsgID_48=data.pop(0)
 MsgID_49=data.pop(0)
-MsgID_56=data.pop(0)
-MsgID_57=data.pop(0)
-MsgID_116=data.pop(0)
-MsgID_117=data.pop(0)
-MsgID_118=data.pop(0)
-MsgID_119=data.pop(0)
-MsgID_120=data.pop(0)
-MsgID_121=data.pop(0)
-MsgID_122=data.pop(0)
-MsgID_123=data.pop(0)
+MsgID_56=float(data.pop(0))
+MsgID_57=float(data.pop(0))
+MsgID_116=int(data.pop(0))
+MsgID_117=int(data.pop(0))
+MsgID_118=int(data.pop(0))
+MsgID_119=int(data.pop(0))
+MsgID_120=int(data.pop(0))
+MsgID_121=int(data.pop(0))
+MsgID_122=int(data.pop(0))
+MsgID_123=int(data.pop(0))
 
-#todo
-
-#convert data in MSGID_X to float, int ect.. add function to change control setpoint
+if verbose_lvl > 0:
+        print("Data parsed to variables")
