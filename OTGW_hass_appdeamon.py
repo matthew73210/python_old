@@ -1,5 +1,5 @@
 #! python
-import appdaemon.appapi as appapi
+import appdaemon.plugins.hass.hassapi as hass
 import telnetlib
 import re
 
@@ -30,64 +30,110 @@ import re
 #DHW burner operation hours (MsgID=123) - Printed as a decimal value
 
 
-HOST = "192.168.1.100" #set OTGW ip
-PORT = "6638" #set OTGW port
-OTGW = telnetlib.Telnet()
 
 
-class opentherm_OTGW(appapi.AppDaemon):
+
+class opentherm_OTGW(hass.Hass):
 
     def initialize(self):
-            
-            self.OTGW_variables = ['MsgID=0', 'MsgID=1', 'MsgID=6', 'MsgID=14', 'MsgID=15', 'MsgID=16', 'MsgID=17', 'MsgID=18', 'MsgID=24',
-                                  'MsgID=25', 'MsgID=26', 'MsgID=27', 'MsgID=28', 'MsgID=48', 'MsgID=49', 'MsgID=56', 'MsgID=57', 'MsgID=116',
-                                  'MsgID=117', 'MsgID=118', 'MsgID=119', 'MsgID=120', 'MsgID=121', 'MsgID=122', 'MsgID=123']
-            
-            self.OTGW_variables_library = {}
-            
-            self.log("opentherm_OTGW is ready")
+    
         
-            #opentherm_OTGW.OTGW_read(self)
-            #opentherm_OTGW.OTGW_write(self)
+        self.HOST = "192.168.1.100" #set OTGW ip
+        self.PORT = "6638" #set OTGW port
+        self.OTGW = telnetlib.Telnet()
+        self.log("opentherm_OTGW is ready")
+        
+        opentherm_OTGW.OTGW_read(self)
+        #opentherm_OTGW.OTGW_write(self)
+    
     
     def OTGW_read(self):
+    
+    
+        self.OTGW.open(self.HOST,self.PORT)
+        self.log("Port opened")
         
-        try:
-            OTGW.open(HOST,PORT)
-            self.log("Port opened")
-
-            OTGW.write(('PS=1' + '\r\n').encode('ascii'))
-            self.output=OTGW.read_until(("\n>").encode('ascii'),1)
-            OTGW.close()
-            self.log("PS=1 sent")
-
-            self.data=str(self.output)
-
-            self.data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", self.data)
-
-            self.data_2= self.data_1[1:]
-
-            self.data_list = self.data_2.split(',')
-            
-        except:
-            self.log("A problem has arisen")
+        self.OTGW.write(('PS=1' + '\r\n').encode('ascii'))
+        self.output=self.OTGW.read_until(("\n>").encode('ascii'),1)
+        self.OTGW.close()
+        self.log("PS=1 sent")
         
-
+        self.data=str(self.output)
+        self.log("string set")
         
+        self.data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", self.data)
+        self.log("data removed from string")
+        
+        self.data_2= self.data_1[1:]
+        self.log("first value removed from string")
+        
+        self.data_list = self.data_2.split(',')
+        self.log("string split")
+                    
+        msgid_0=self.data_list.pop(0)
+        msgid_1=float(self.data_list.pop(0))
+        msgid_6=self.data_list.pop(0)
+        msgid_14=float(self.data_list.pop(0))
+        msgid_15=self.data_list.pop(0)
+        msgid_16=float(self.data_list.pop(0))    
+        msgid_17=float(self.data_list.pop(0))
+        msgid_18=float(self.data_list.pop(0))
+        msgid_24=float(self.data_list.pop(0))
+        msgid_25=float(self.data_list.pop(0))
+        msgid_26=float(self.data_list.pop(0))
+        msgid_27=float(self.data_list.pop(0))
+        msgid_28=float(self.data_list.pop(0))
+        msgid_48=self.data_list.pop(0)
+        msgid_49=self.data_list.pop(0)
+        msgid_56=float(self.data_list.pop(0))
+        msgid_57=float(self.data_list.pop(0))
+        msgid_116=int(self.data_list.pop(0))
+        msgid_117=int(self.data_list.pop(0))
+        msgid_118=int(self.data_list.pop(0))
+        msgid_119=int(self.data_list.pop(0))
+        msgid_120=int(self.data_list.pop(0))
+        msgid_121=int(self.data_list.pop(0))
+        msgid_122=int(self.data_list.pop(0))
+        msgid_123=int(self.data_list.pop(0))
+        
+        self.log("variables updated")
+        
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_17",value=msgid_17)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_25",value=msgid_25)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_26",value=msgid_26)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_28",value=msgid_28)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_56",value=msgid_56)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_57",value=msgid_57)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_116",value=msgid_116)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_117",value=msgid_117)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_118",value=msgid_118)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_119",value=msgid_119)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_120",value=msgid_120)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_121",value=msgid_121)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_122",value=msgid_122)
+        self.call_service("input_number/set_value",entity_id="input_number.msgid_123",value=msgid_123)
+        
+    
+        
+        self.log("variables printed")
+        
+        
+        
+        self.log("end of function")
+    
+    
     def OTGW_write(self):
     
-        try:
-            control_setpoint= input("setpoint ?")
-            
-            
-            OTGW.open(HOST,PORT)
-            
-                
-            OTGW.write(('CS=' + control_setpoint + '\r\n').encode('ascii'))
-            self.output=OTGW.read_until(("\n>").encode('ascii'),1)
-            self.data=str(self.output)
-            print(re.sub("b|r|n|'|\\\\", "", self.data))
-            OTGW.close()
-            
-        except:
-            self.log("A problem has arisen")
+        state = self.get_state("input_number.command_setpoint", attribute="state")
+        
+        control_setpoint= str(state)
+        
+        
+        self.OTGW.open(self.HOST,self.PORT)
+        
+        
+        self.OTGW.write(('CS=' + control_setpoint + '\r\n').encode('ascii'))
+        self.output=self.OTGW.read_until(("\n>").encode('ascii'),1)
+        self.data=str(self.output)
+        self.log(re.sub("b|r|n|'|\\\\", "", self.data))
+        self.OTGW.close()
