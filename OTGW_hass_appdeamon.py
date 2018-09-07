@@ -1,5 +1,5 @@
 #! python
-import appdaemon.plugins.hass.hassapi as hass
+import appdaemon.appapi as appapi
 import telnetlib
 import re
 
@@ -35,47 +35,59 @@ PORT = "6638" #set OTGW port
 OTGW = telnetlib.Telnet()
 
 
-class opentherm_OTGW(hass.Hass):
+class opentherm_OTGW(appapi.AppDaemon):
 
-     
     def initialize(self):
-        
-        self.OTGW_variables = ['MsgID=0', 'MsgID=1', 'MsgID=6', 'MsgID=14', 'MsgID=15', 'MsgID=16', 'MsgID=17', 'MsgID=18', 'MsgID=24',
-                              'MsgID=25', 'MsgID=26', 'MsgID=27', 'MsgID=28', 'MsgID=48', 'MsgID=49', 'MsgID=56', 'MsgID=57', 'MsgID=116',
-                              'MsgID=117', 'MsgID=118', 'MsgID=119', 'MsgID=120', 'MsgID=121', 'MsgID=122', 'MsgID=123']
-        
-        self.OTGW_variables_library = {}
-    
-        #opentherm_OTGW.OTGW_read()
-        #opentherm_OTGW.OTGW_write()
-    
-    def OTGW_read():
-        
-        OTGW.open(HOST,PORT)
-        
             
-        OTGW.write(('PS=1' + '\r\n').encode('ascii'))
-        output=OTGW.read_until(("\n>").encode('ascii'),1)
-        OTGW.close()
+            self.OTGW_variables = ['MsgID=0', 'MsgID=1', 'MsgID=6', 'MsgID=14', 'MsgID=15', 'MsgID=16', 'MsgID=17', 'MsgID=18', 'MsgID=24',
+                                  'MsgID=25', 'MsgID=26', 'MsgID=27', 'MsgID=28', 'MsgID=48', 'MsgID=49', 'MsgID=56', 'MsgID=57', 'MsgID=116',
+                                  'MsgID=117', 'MsgID=118', 'MsgID=119', 'MsgID=120', 'MsgID=121', 'MsgID=122', 'MsgID=123']
+            
+            self.OTGW_variables_library = {}
+            
+            self.log("opentherm_OTGW is ready")
         
-        data=str(output)
-        
-        data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", data)
-        
-        data_2= data_1[1:]
+            #opentherm_OTGW.OTGW_read(self)
+            #opentherm_OTGW.OTGW_write(self)
     
-        data_list = data_2.split(',')
+    def OTGW_read(self):
         
+        try:
+            OTGW.open(HOST,PORT)
+            self.log("Port opened")
+
+            OTGW.write(('PS=1' + '\r\n').encode('ascii'))
+            self.output=OTGW.read_until(("\n>").encode('ascii'),1)
+            OTGW.close()
+            self.log("PS=1 sent")
+
+            self.data=str(self.output)
+
+            self.data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", self.data)
+
+            self.data_2= self.data_1[1:]
+
+            self.data_list = self.data_2.split(',')
+            
+        except:
+            self.log("A problem has arisen")
         
 
         
-    def OTGW_write():
-        
-        OTGW.open(HOST,PORT)
+    def OTGW_write(self):
+    
+        try:
+            control_setpoint= input("setpoint ?")
             
-        OTGW.write(('CS=' + control_setpoint + '\r\n').encode('ascii'))
-        output=OTGW.read_until(("\n>").encode('ascii'),1)
-        data=str(output)
-        print(re.sub("b|r|n|'|\\\\", "", data))
-        OTGW.close()
-        
+            
+            OTGW.open(HOST,PORT)
+            
+                
+            OTGW.write(('CS=' + control_setpoint + '\r\n').encode('ascii'))
+            self.output=OTGW.read_until(("\n>").encode('ascii'),1)
+            self.data=str(self.output)
+            print(re.sub("b|r|n|'|\\\\", "", self.data))
+            OTGW.close()
+            
+        except:
+            self.log("A problem has arisen")
