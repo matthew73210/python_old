@@ -125,7 +125,32 @@ class opentherm_OTGW(hass.Hass):
             if self.log_level > 0:
                 self.log("variables updated")
             
+            
             self.call_service("input_text/set_value",entity_id="input_text.msgid_0",value=msgid_0)
+            
+            if msgid_0 == "00000001/00000000":
+                self.set_state("sensor.central_heating", state = 1)
+            
+            if msgid_0 == "00000001/00000010":
+                self.set_state("sensor.central_heating_running", state = 1)
+                self.set_state("sensor.central_heating", state = 1)
+                
+            if msgid_0 == "00000001/00001010":
+                self.set_state("sensor.central_heating_running", state = 1)
+                self.set_state("sensor.central_heating", state = 1)
+                self.set_state("sensor.flame_status", state = 1)
+                
+            if msgid_0 == "00000000/00001100":
+                self.set_state("sensor.hot_water_running", state = 1)
+                self.set_state("sensor.flame_status", state = 1)
+                
+            if msgid_0 == "00000000/00000000":
+                self.set_state("sensor.central_heating_running", state = 0)
+                self.set_state("sensor.central_heating", state = 0)
+                self.set_state("sensor.flame_status", state = 0)
+                self.set_state("sensor.hot_water_running", state = 0)
+            
+            
             self.call_service("input_number/set_value",entity_id="input_number.msgid_17",value=msgid_17)
             self.call_service("input_number/set_value",entity_id="input_number.msgid_25",value=msgid_25)
             self.call_service("input_number/set_value",entity_id="input_number.msgid_26",value=msgid_26)
