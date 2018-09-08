@@ -44,7 +44,7 @@ class opentherm_OTGW(hass.Hass):
         self.OTGW = telnetlib.Telnet()
         self.log("opentherm_OTGW is ready")
 
-        #self.run_every(self.OTGW_read,datetime.now(),20)
+        self.run_every(self.OTGW_read,datetime.now(),20)
         #self.run_every(self.OTGW_write,datetime.now(),20)
     
     def OTGW_read(self,kwargs):
@@ -120,6 +120,8 @@ class opentherm_OTGW(hass.Hass):
         
         
         self.log("end of function")
+        
+        self.OTGW_write(kwargs)
     
     
     def OTGW_write(self,kwargs):
