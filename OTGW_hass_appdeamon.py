@@ -2,6 +2,7 @@
 import appdaemon.plugins.hass.hassapi as hass
 import telnetlib
 import re
+from datetime import datetime, timedelta
 
 #Status (MsgID=0) - Printed as two 8-bit bitfields
 #Control setpoint (MsgID=1) - Printed as a floating point value / not used
@@ -42,12 +43,11 @@ class opentherm_OTGW(hass.Hass):
         self.PORT = "6638" #set OTGW port
         self.OTGW = telnetlib.Telnet()
         self.log("opentherm_OTGW is ready")
-        
-        opentherm_OTGW.OTGW_read(self)
-        #opentherm_OTGW.OTGW_write(self)
+
+        #self.run_every(self.OTGW_read,datetime.now(),20)
+        #self.run_every(self.OTGW_write,datetime.now(),20)
     
-    
-    def OTGW_read(self):
+    def OTGW_read(self,kwargs):
     
     
         self.OTGW.open(self.HOST,self.PORT)
@@ -122,7 +122,7 @@ class opentherm_OTGW(hass.Hass):
         self.log("end of function")
     
     
-    def OTGW_write(self):
+    def OTGW_write(self,kwargs):
     
         state = self.get_state("input_number.command_setpoint", attribute="state")
         
