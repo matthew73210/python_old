@@ -91,6 +91,7 @@ class opentherm_OTGW(hass.Hass):
         if self.log_level > 0:
             self.log("string split")
         
+            self.log(data_list)
         
         if self.data_list_old != data_list:
         
@@ -124,6 +125,7 @@ class opentherm_OTGW(hass.Hass):
             if self.log_level > 0:
                 self.log("variables updated")
             
+            self.call_service("input_text/set_value",entity_id="input_text.msgid_0",value=msgid_0)
             self.call_service("input_number/set_value",entity_id="input_number.msgid_17",value=msgid_17)
             self.call_service("input_number/set_value",entity_id="input_number.msgid_25",value=msgid_25)
             self.call_service("input_number/set_value",entity_id="input_number.msgid_26",value=msgid_26)
@@ -179,4 +181,7 @@ class opentherm_OTGW(hass.Hass):
         else:
             if self.log_level > 0:
                 self.log("nothing to send")
+        
+        
+        
         
