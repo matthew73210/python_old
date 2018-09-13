@@ -47,7 +47,7 @@ class opentherm_OTGW(hass.Hass):
         self.HOST = "192.168.1.100" #set OTGW ip
         self.PORT = "6638" #set OTGW port
         self.OTGW = telnetlib.Telnet() #telnet object
-        self.log_level = 0 #set to 0 to supress logs in functions
+        self.log_level = 1 #set to 0 to supress logs in functions
         self.validation = 0 #used to stop function if except thrown
         
         try:
@@ -75,10 +75,26 @@ class opentherm_OTGW(hass.Hass):
     
     def run_opentherm(self,kwargs):
     
-        self.OTGW_read(kwargs)
-        self.OTGW_write(kwargs)
-        self.OTGW_send_to_HA(kwargs)
+        self.run = 0
+        self.OTGW_test(kwargs)
+        
+        if self.run == 1:
+            self.OTGW_read(kwargs)
+            self.OTGW_write(kwargs)
+            self.OTGW_send_to_HA(kwargs)
     
+    def OTGW_test(self,kwargs):
+        
+        try:
+            self.OTGW.open(self.HOST,self.PORT,10)
+            self.OTGW.close()
+            self.run = 1
+            if self.log_level > 0:
+                self.log("Host is still up!")
+        except:
+            self.log("Host is down, retry next time")
+            self.run =0
+            
     
     def OTGW_read(self,kwargs):
     
@@ -195,42 +211,42 @@ class opentherm_OTGW(hass.Hass):
             self.call_service("input_text/set_value",entity_id="input_text.msgid_0",value=msgid_0)
             
             if msgid_0 == "00000001/00000000":
-                self.set_state("sensor.central_heating", state = 1)
+                self.set_state("sensor.central_heating", state = "on")
             
             if msgid_0 == "00000001/00000010":
-                self.set_state("sensor.central_heating_running", state = 1)
-                self.set_state("sensor.central_heating", state = 1)
+                self.set_state("sensor.central_heating_running", state = "on")
+                self.set_state("sensor.central_heating", state = "on")
                 
             if msgid_0 == "00000001/00001010":
-                self.set_state("sensor.central_heating_running", state = 1)
-                self.set_state("sensor.central_heating", state = 1)
-                self.set_state("sensor.flame_status", state = 1)
+                self.set_state("sensor.central_heating_running", state = "on")
+                self.set_state("sensor.central_heating", state = "on")
+                self.set_state("sensor.flame_status", state = "on")
                 
             if msgid_0 == "00000000/00001100":
-                self.set_state("sensor.hot_water_running", state = 1)
-                self.set_state("sensor.flame_status", state = 1)
+                self.set_state("sensor.hot_water_running", state = "on")
+                self.set_state("sensor.flame_status", state = "on")
                 
             if msgid_0 == "00000000/00000000":
-                self.set_state("sensor.central_heating_running", state = 0)
-                self.set_state("sensor.central_heating", state = 0)
-                self.set_state("sensor.flame_status", state = 0)
-                self.set_state("sensor.hot_water_running", state = 0)
+                self.set_state("sensor.central_heating_running", state = "off")
+                self.set_state("sensor.central_heating", state = "off")
+                self.set_state("sensor.flame_status", state = "off")
+                self.set_state("sensor.hot_water_running", state = "off")
             
             
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_17",value=msgid_17)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_25",value=msgid_25)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_26",value=msgid_26)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_28",value=msgid_28)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_56",value=msgid_56)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_57",value=msgid_57)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_116",value=msgid_116)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_117",value=msgid_117)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_118",value=msgid_118)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_119",value=msgid_119)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_120",value=msgid_120)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_121",value=msgid_121)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_122",value=msgid_122)
-            self.call_service("input_number/set_value",entity_id="input_number.msgid_123",value=msgid_123)
+            self.set_state("sensor.msgid_17", state = msgid_17)
+            self.set_state("sensor.msgid_25", state = msgid_25)
+            self.set_state("sensor.msgid_26", state = msgid_26)
+            self.set_state("sensor.msgid_28", state = msgid_28)
+            self.set_state("sensor.msgid_56", state = msgid_56)
+            self.set_state("sensor.msgid_57", state = msgid_57)
+            self.set_state("sensor.msgid_116", state = msgid_116)
+            self.set_state("sensor.msgid_117", state = msgid_117)
+            self.set_state("sensor.msgid_118", state = msgid_118)
+            self.set_state("sensor.msgid_119", state = msgid_119)
+            self.set_state("sensor.msgid_120", state = msgid_120)
+            self.set_state("sensor.msgid_121", state = msgid_121)
+            self.set_state("sensor.msgid_122", state = msgid_122)
+            self.set_state("sensor.msgid_123", state = msgid_123)
             
             self.data_list_old = self.data_list
             
