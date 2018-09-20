@@ -1,7 +1,8 @@
 #! python
 
 #based on : https://github.com/ivmech/ivPID/blob/master/PID.py
-#and https://studentnet.cs.manchester.ac.uk/resources/library/thesis_abstracts/MSc14/FullText/Ioannidis-Feidias-fulltext.pdf
+#https://studentnet.cs.manchester.ac.uk/resources/library/thesis_abstracts/MSc14/FullText/Ioannidis-Feidias-fulltext.pdf
+#https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=12&ved=2ahUKEwiAqL_LksndAhWN4YUKHZ1dBIkQFjALegQIAxAC&url=http%3A%2F%2Fwww.mdpi.com%2F2071-1050%2F9%2F10%2F1868%2Fpdf&usg=AOvVaw3d-p3MLeCq3fWIewLoz9xh
 
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, timedelta
@@ -13,7 +14,7 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
     
     def initialize(self): #This is where the variables used by the program will be set, and pulled when restarted.
         
-        
+        #for these variables i could create a dictonary
         self.kd = 0
         self.ki = 0
         self.kp = 0
