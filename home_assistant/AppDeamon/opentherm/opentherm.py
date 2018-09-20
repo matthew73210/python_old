@@ -110,18 +110,18 @@ class opentherm_OTGW(hass.Hass):
             self.log("Port opened")
         
         self.OTGW.write(('PS=1' + '\r\n').encode('ascii'))
-        output=self.OTGW.read_until(("\n>").encode('ascii'),1)
+        output_read=self.OTGW.read_until(("\n>").encode('ascii'),1)
         self.OTGW.close()
         
         if self.log_level > 0:
             self.log("PS=1 sent")
         
-        data=str(output)
+        data_read=str(output_read)
         
         if self.log_level > 0:
             self.log("string set")
         
-        data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", data)
+        data_1= re.sub("b|P|S|r|n| |:|'|\\\\", "", data_read)
         
         if self.log_level > 0:
             self.log("data removed from string")
@@ -157,14 +157,14 @@ class opentherm_OTGW(hass.Hass):
             
             
             self.OTGW.write(('CS=' + control_setpoint + '\r\n').encode('ascii'))
-            self.output=self.OTGW.read_until(("\n>").encode('ascii'),1)
-            self.data=str(self.output)
+            output_write=self.OTGW.read_until(("\n>").encode('ascii'),1)
+            data_write=str(output_write)
             if self.log_level > 0:
-                self.log(re.sub("b|r|n|'|\\\\", "", self.data))
+                self.log(re.sub("b|r|n|'|\\\\", "", data_write))
                 
             self.OTGW.close()
             
-            self.control_setpoint_old=control_setpoint
+            self.control_setpoint_old = control_setpoint
         
         else:
             if self.log_level > 0:
@@ -172,12 +172,13 @@ class opentherm_OTGW(hass.Hass):
         
     def OTGW_send_to_HA(self,kwargs):
         
-        #Here we check if the data has changed and update the variables. I chose to do it this was as to let you choose which and what data gets sent to HA.
+        #Here we check if the data has changed and update the variables. I chose to do it this way as to let you choose which and what data gets sent to HA.
         #For this to work you can either (thanks ReneTode) send as a sensor or update a input_nuber/text. All the entities must be set in configuration.yaml
         
         if self.data_list_old != self.data_list:
-        
-        
+            
+            self.data_list_old = self.data_list
+                
             msgid_0=self.data_list.pop(0)
             msgid_1=float(self.data_list.pop(0))
             msgid_6=self.data_list.pop(0)
@@ -204,51 +205,65 @@ class opentherm_OTGW(hass.Hass):
             msgid_122=int(self.data_list.pop(0))
             msgid_123=int(self.data_list.pop(0))
             
+             
             if self.log_level > 0:
                 self.log("variables updated")
             
             
-            self.call_service("input_text/set_value",entity_id="input_text.msgid_0",value=msgid_0)
-            
             if msgid_0 == "00000001/00000000":
-                self.set_state("sensor.central_heating", state = "on")
+                central_heating = "on"
+                central_heating_running = "off"
+                flame_status = "off"
+                hot_water_running = "off"
             
             if msgid_0 == "00000001/00000010":
-                self.set_state("sensor.central_heating_running", state = "on")
-                self.set_state("sensor.central_heating", state = "on")
+                central_heating_running = "on"
+                central_heating = "on"
+                flame_status = "off"
+                hot_water_running = "off"
                 
             if msgid_0 == "00000001/00001010":
-                self.set_state("sensor.central_heating_running", state = "on")
-                self.set_state("sensor.central_heating", state = "on")
-                self.set_state("sensor.flame_status", state = "on")
+                central_heating_running = "on"
+                central_heating = "on"
+                flame_status = "on"
+                hot_water_running = "off"
+                
+            if msgid_0 == "00000001/00001110":
+                central_heating_running = "on"
+                central_heating = "on"
+                flame_status = "on"
+                hot_water_running = "on"
                 
             if msgid_0 == "00000000/00001100":
-                self.set_state("sensor.hot_water_running", state = "on")
-                self.set_state("sensor.flame_status", state = "on")
+                hot_water_running = "on"
+                flame_status = "on"
+                central_heating_running = "off"
+                central_heating = "off"
                 
             if msgid_0 == "00000000/00000000":
-                self.set_state("sensor.central_heating_running", state = "off")
-                self.set_state("sensor.central_heating", state = "off")
-                self.set_state("sensor.flame_status", state = "off")
-                self.set_state("sensor.hot_water_running", state = "off")
+                central_heating_running = "off"
+                central_heating = "off"
+                flame_status = "off"
+                hot_water_running = "off"
+                fault_status = "no fault detected"
+                
+            if msgid_0 == "00000000/00000001":
+                fault_status = "fault detected"
+                
+            
+            #This dictonary is used to talor the information you want sending to HA, i found it easiest to do it this way so that you can taylor what you want
+            
+            variables = {"msgid_0": msgid_0, "msgid_17": msgid_17, "msgid_25": msgid_25 , "msgid_28": msgid_28,
+                         "msgid_56": msgid_56, "msgid_57": msgid_57, "msgid_116": msgid_116, "msgid_117": msgid_117,
+                         "msgid_118": msgid_118, "msgid_119": msgid_119, "msgid_120": msgid_120, "msgid_121": msgid_121,
+                         "msgid_122": msgid_122, "msgid_123": msgid_123, "central_heating": central_heating,
+                         "central_heating_running": central_heating_running, "flame_status": flame_status, "hot_water_running": hot_water_running,
+                         "fault_status": fault_status}
+            
+            self.set_state("sensor.boiler_status", state = "1", attributes = variables)
             
             
-            self.set_state("sensor.msgid_17", state = msgid_17)
-            self.set_state("sensor.msgid_25", state = msgid_25)
-            self.set_state("sensor.msgid_26", state = msgid_26)
-            self.set_state("sensor.msgid_28", state = msgid_28)
-            self.set_state("sensor.msgid_56", state = msgid_56)
-            self.set_state("sensor.msgid_57", state = msgid_57)
-            self.set_state("sensor.msgid_116", state = msgid_116)
-            self.set_state("sensor.msgid_117", state = msgid_117)
-            self.set_state("sensor.msgid_118", state = msgid_118)
-            self.set_state("sensor.msgid_119", state = msgid_119)
-            self.set_state("sensor.msgid_120", state = msgid_120)
-            self.set_state("sensor.msgid_121", state = msgid_121)
-            self.set_state("sensor.msgid_122", state = msgid_122)
-            self.set_state("sensor.msgid_123", state = msgid_123)
             
-            self.data_list_old = self.data_list
             
             if self.log_level > 0:
                 self.log("variables printed")
