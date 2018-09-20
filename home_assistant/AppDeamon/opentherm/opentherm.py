@@ -47,7 +47,7 @@ class opentherm_OTGW(hass.Hass):
         self.HOST = "192.168.1.100" #set OTGW ip
         self.PORT = "6638" #set OTGW port
         self.OTGW = telnetlib.Telnet() #telnet object
-        self.log_level = 1 #set to 0 to supress logs in functions
+        self.log_level = 0 #set to 0 to supress logs in functions
         self.validation = 0 #used to stop function if except thrown
         
         try:
@@ -168,7 +168,7 @@ class opentherm_OTGW(hass.Hass):
         
         else:
             if self.log_level > 0:
-                self.log("nothing to send")
+                self.log("No setpoint to update")
         
     def OTGW_send_to_HA(self,kwargs):
         
@@ -215,30 +215,35 @@ class opentherm_OTGW(hass.Hass):
                 central_heating_running = "off"
                 flame_status = "off"
                 hot_water_running = "off"
+                fault_status = "no fault detected"
             
             if msgid_0 == "00000001/00000010":
                 central_heating_running = "on"
                 central_heating = "on"
                 flame_status = "off"
                 hot_water_running = "off"
+                fault_status = "no fault detected"
                 
             if msgid_0 == "00000001/00001010":
                 central_heating_running = "on"
                 central_heating = "on"
                 flame_status = "on"
                 hot_water_running = "off"
+                fault_status = "no fault detected"
                 
             if msgid_0 == "00000001/00001110":
                 central_heating_running = "on"
                 central_heating = "on"
                 flame_status = "on"
                 hot_water_running = "on"
+                fault_status = "no fault detected"
                 
             if msgid_0 == "00000000/00001100":
                 hot_water_running = "on"
                 flame_status = "on"
                 central_heating_running = "off"
                 central_heating = "off"
+                fault_status = "no fault detected"
                 
             if msgid_0 == "00000000/00000000":
                 central_heating_running = "off"
@@ -260,13 +265,13 @@ class opentherm_OTGW(hass.Hass):
                          "central_heating_running": central_heating_running, "flame_status": flame_status, "hot_water_running": hot_water_running,
                          "fault_status": fault_status}
             
-            self.set_state("sensor.boiler_status", state = "1", attributes = variables)
+            self.set_state("sensor.boiler_status", state = "Boiler stats", attributes = variables)
             
             
             
             
-            if self.log_level > 0:
-                self.log("variables printed")
+            
+            self.log("variables printed")
             
         else:
             if self.log_level > 0:
