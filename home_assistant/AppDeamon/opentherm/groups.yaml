@@ -1,0 +1,24 @@
+boiler:
+  name: Boiler
+  entities:
+    - input_number.command_setpoint
+    - sensor.msgid_0
+    - sensor.central_heating
+    - sensor.central_heating_running
+    - sensor.flame_status
+    - sensor.fault_status
+    - sensor.hot_water_running
+    - sensor.msgid_116
+    - sensor.msgid_117
+    - sensor.msgid_118
+    - sensor.msgid_119
+    - sensor.msgid_120
+    - sensor.msgid_121
+    - sensor.msgid_122
+    - sensor.msgid_123
+    - sensor.msgid_17
+    - sensor.msgid_25
+    - sensor.msgid_26
+    - sensor.msgid_28
+    - sensor.msgid_56
+    - sensor.msgid_57
