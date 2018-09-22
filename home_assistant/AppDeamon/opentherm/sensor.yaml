@@ -1,0 +1,59 @@
+- platform: template
+  sensors:
+    msgid_0:
+      friendly_name: "Status"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_0 }}"
+    msgid_17:
+      friendly_name: "Relative modulation level"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_17 }}"
+    msgid_25:
+      friendly_name: "Boiler water temperature"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_25 }}"
+    msgid_28:
+      friendly_name: "Return water temperature"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_28 }}"
+    msgid_56:
+      friendly_name: "DHW setpoint"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_56 }}"
+    msgid_57:
+      friendly_name: "Max CH water setpoint"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_57 }}"
+    msgid_116:
+      friendly_name: "Burner starts"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_116 }}"
+    msgid_117:
+      friendly_name: "CH pump starts"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_117 }}"
+    msgid_118:
+      friendly_name: "DHW pump/valve starts"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_118 }}"
+    msgid_119:
+      friendly_name: "DHW burner starts"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_119 }}"
+    msgid_120:
+      friendly_name: "Burner operation hours"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_120 }}"
+    msgid_121:
+      friendly_name: "CH pump operation hours"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_121 }}"
+    msgid_122:
+      friendly_name: "DHW pump/valve operation hours"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_122 }}"
+    msgid_123:
+      friendly_name: "DHW burner operation hours"
+      value_template: "{{ states.sensor.boiler_status.attributes.msgid_123 }}"
+    central_heating:
+      friendly_name: "Central heating"
+      value_template: "{{ states.sensor.boiler_status.attributes.central_heating }}"
+    central_heating_running:
+      friendly_name: "Central heating running"
+      value_template: "{{ states.sensor.boiler_status.attributes.central_heating_running }}"
+    fault_status:
+      friendly_name: "Fault status"
+      value_template: "{{ states.sensor.boiler_status.attributes.fault_status }}"
+    flame_status:
+      friendly_name: "Flame status"
+      value_template: "{{ states.sensor.boiler_status.attributes.flame_status }}"
+    hot_water_running:
+      friendly_name: "Hot water running"
+      value_template: "{{ states.sensor.boiler_status.attributes.hot_water_running }}"
