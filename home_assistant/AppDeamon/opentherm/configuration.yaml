@@ -8,3 +8,6 @@ input_number:
     step: 1
     unit_of_measurement: "°C"
     mode: box
+sensor: !include sensor.yaml   
+
+group: !include groups.yaml
