@@ -14,7 +14,7 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
     
     def initialize(self): #This is where the variables used by the program will be set, and pulled when restarted.
         
-        self.log_level = 1 #set to 0 to supress logs in functions
+        self.log_level = 0 #set to 0 to supress logs in functions
         
         self.kd = 0
         self.ki = 0
@@ -25,6 +25,8 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
         self.Pterm = 0
         self.Iterm = 0
         self.Dterm = 0
+        
+        self.Iterm_anti_windup = 0
         
         self.output = 0
         
@@ -47,13 +49,13 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
         self.boiler_water_temp = 0
         self.temp_window = 1.5
         
-        self.current_time = time.time()/(10) #had a problem where the integral would have a massive delta t, a consequence of have a 20 second cycle. Check dt with log that it is larger than 1 but no mre than 10. Otherwise it will osscilate with anti windup
+        self.current_time = time.time() #had a problem where the integral would have a massive delta t, a consequence of have a 20 second cycle. Check dt with log that it is larger than 1 but no mre than 10. Otherwise it will osscilate with anti windup
         self.last_time = self.current_time
         
         self.log("initialized")
         
         
-        self.run_every(self.mode_check,datetime.now(),20)
+        self.run_every(self.mode_check,datetime.now(),5) #this needs to be set compaired to system deadtime, to low and the integral will windup even with antiwindup.
         
     def mode_check(self,kwargs):
         
@@ -128,48 +130,60 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
         self.room_temp = self.get_state("sensor.temp_lvr", attribute="state")
         
         #Get time
-        self.current_time = time.time()/(10)
-        self.log("time")
-        self.log(self.current_time)
+        self.current_time = time.time()
+        if self.log_level > 0:
+            self.log("time")
+            self.log(self.current_time)
 
         #Calculate dt, error and d_error
         self.dt = self.current_time - self.last_time
-        self.log("dt")
-        self.log(self.dt)
+        if self.log_level > 0:
+            self.log("dt")
+            self.log(self.dt)
         self.error = float(self.setpoint) - float(self.room_temp)
         self.d_error = self.error - self.last_error
         
-        if self.error < 0:
-            self.error = 0
+
         
         
         #Push values to memory for next iteration
         self.last_time = self.current_time
         self.last_error = self.error
         
+        #testing antiwind for i term, if over it will re evaluate the i term
+        self.Iterm_anti_windup = self.Iterm
+        
         #Calculate PID
         self.Pterm = float(self.kp)*float(self.error)
-        self.Iterm += float(self.ki)*((float(self.error) + float(self.windup_X))*float(self.dt))
+        self.Iterm = self.Iterm + float(self.ki)*((float(self.error))*float(self.dt))
         self.Dterm = float(self.kd)*(float(self.d_error)/float(self.dt))
+        
+        
         
         self.output = self.Pterm + self.Dterm + self.Iterm
         
         #Clip output and Iterm agaisnt windup
         if self.output > self.max_output:
             self.windup = -float(self.output) + float(self.max_output)
+            self.windup_X = float(self.windup) * float(self.anti_windup)
+            self.Iterm = self.Iterm_anti_windup + float(self.ki)*((float(self.error) + float(self.windup_X))*float(self.dt))
+            self.output = self.Pterm + self.Dterm + self.Iterm
+        if self.output < 0:
+            self.windup = -float(self.output) + float(0)
+            self.windup_X = float(self.windup) * float(self.anti_windup)
+            self.Iterm = self.Iterm_anti_windup + float(self.ki)*((float(self.error) + float(self.windup_X))*float(self.dt))
+            self.output = self.Pterm + self.Dterm + self.Iterm
+
             
-            self.output = self.max_output
-            self.log("outputclipped")
-        if self.output < -self.max_output:
-            self.output = 0
-            self.log("output clipped")
+            
 
         
-        self.windup_X = float(self.windup) * float(self.anti_windup)
         
-        self.log("windup and windup X")
-        self.log(self.windup)
-        self.log(self.windup_X)
+        
+        if self.log_level > 0:
+            self.log("windup and windup X")
+            self.log(self.windup)
+            self.log(self.windup_X)
         
         
         
@@ -178,5 +192,5 @@ class PID(hass.Hass): #add hass.Hass when in appdeamon
         
         if self.boiler_water_temp < 10:
             self.boiler_water_temp = 0
-
+        #self.boiler_water_temp = 0 #comment out when finished testing, program will send values to boiler
         
